@@ -63,12 +63,12 @@ def simulate_HH_neuron(input_current, simulation_time):
     """
 
     # neuron parameters
-    El = 10.6 * b2.mV
-    EK = -12 * b2.mV
-    ENa = 115 * b2.mV
-    gl = 0.3 * b2.msiemens
-    gK = 36 * b2.msiemens
-    gNa = 120 * b2.msiemens
+    El = -70 * b2.mV
+    EK = -90 * b2.mV
+    ENa = 50 * b2.mV
+    gl = 0.1 * b2.msiemens
+    gK = 5 * b2.msiemens
+    gNa = 50 * b2.msiemens
     C = 1 * b2.ufarad
 
     # forming HH model with differential equations
@@ -86,6 +86,68 @@ def simulate_HH_neuron(input_current, simulation_time):
     dm/dt = alpham*(1-m)-betam*m : 1
     dn/dt = alphan*(1-n)-betan*n : 1
     dvm/dt = membrane_Im/C : volt
+    """
+
+    neuron = b2.NeuronGroup(1, eqs, method="exponential_euler")
+
+    # parameter initialization
+    neuron.vm = 0
+    neuron.m = 0.05
+    neuron.h = 0.60
+    neuron.n = 0.32
+
+    # tracking parameters
+    st_mon = b2.StateMonitor(neuron, ["vm", "I_e", "m", "n", "h"], record=True)
+
+    # running the simulation
+    hh_net = b2.Network(neuron)
+    hh_net.add(st_mon)
+    hh_net.run(simulation_time)
+
+    return st_mon
+
+def simulate_HH_neuron_adaptative(input_current, simulation_time):
+
+    """A Hodgkin-Huxley neuron implemented in Brian2.
+
+    Args:
+        input_current (TimedArray): Input current injected into the HH neuron
+        simulation_time (float): Simulation time [seconds]
+
+    Returns:
+        StateMonitor: Brian2 StateMonitor with recorded fields
+        ["vm", "I_e", "m", "n", "h"]
+    """
+
+    # neuron parameters
+    El = -70 * b2.mV
+    EK = -90 * b2.mV
+    ENa = 50 * b2.mV
+    gl = 0.1 * b2.msiemens
+    gK = 5 * b2.msiemens
+    gNa = 50 * b2.msiemens
+    C = 1 * b2.ufarad
+    gM = 0.07 * b2.msiemens
+
+    # forming HH model with differential equations
+    eqs = """""
+    I_e = input_current(t,i) : amp
+    membrane_Im = I_e + gNa*m**3*h*(ENa-vm) + \
+        gl*(El-vm) + gK*n**4*(EK-vm) + gM*p*(EK-vm) : amp
+    alphah = .128*exp(-(vm+43*mV)/(18*mV))/ms : Hz
+    alpham = -.32*(47*mV+vm)/(exp(-0.25*(vm/mV+47))-1)/mV/ms : Hz
+    alphan = -.032*(45*mV+vm)/(exp(-0.2*(vm/mV+45))-1)/mV/ms : Hz
+    betah = 1./(1+exp(3.-.1*vm/mV))/ms : Hz
+    betam = 4*exp(-.0556*vm/mV)/ms : Hz
+    betan = .125*exp(-.0125*vm/mV)/ms : Hz
+    pinf = 1./(exp(-0.1*(vm)))
+    dh/dt = alphah*(1-h)-betah*h : 1
+    dm/dt = alpham*(1-m)-betam*m : 1
+    dn/dt = alphan*(1-n)-betan*n : 1
+
+
+    dvm/dt = membrane_Im/C : volt
+
     """
 
     neuron = b2.NeuronGroup(1, eqs, method="exponential_euler")
