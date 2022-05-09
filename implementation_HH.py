@@ -61,7 +61,7 @@ def plot_data(state_monitor, type='regular', title=None):
 
     if title is not None:
         plt.suptitle(title)
-    plt.show()
+    #plt.show()
     
     # Plot of the channel variables:
 
@@ -98,48 +98,6 @@ def plot_data(state_monitor, type='regular', title=None):
         plt.suptitle(title)
     plt.show()
 
-    #plot of xinf and tx :
-    fig,ax = plt.subplots(3,1)
-    ax[0].plot(state_monitor.vm[0] / b2.mV, state_monitor.minf[0]/ b2.volt, "black", lw=2)
-    ax[0].set_xlabel("t (ms)")
-    ax[0].set_ylabel("minf")
-    #ax[0].set_ylim((-0.2, 1.2))
-    ax[0].grid()
-
-    ax[1].plot(state_monitor.vm[0] / b2.mV, state_monitor.ninf[0]/ b2.volt, "black", lw=2)
-    ax[1].set_xlabel("t (ms)")
-    ax[1].set_ylabel("ninf")
-    #ax[0].set_ylim((-0.2, 1.2))
-    ax[1].grid()
-
-    ax[2].plot(state_monitor.vm[0] / b2.mV, state_monitor.hinf[0]/ b2.volt, "black", lw=2)
-    ax[2].set_xlabel("t (ms)")
-    ax[2].set_ylabel("hinf")
-    #ax[0].set_ylim((-0.2, 1.2))
-    ax[2].grid()
-    
-    plt.show()
-
-    fig,ax = plt.subplots(3,1)
-    ax[0].plot(state_monitor.vm[0] / b2.mV, state_monitor.tm[0] / b2.ms, "black", lw=2)
-    ax[0].set_xlabel("t (ms)")
-    ax[0].set_ylabel("tm")
-    #ax[0].set_ylim((-0.2, 1.2))
-    ax[0].grid()
-
-    ax[1].plot(state_monitor.vm[0] / b2.mV, state_monitor.tn[0] / b2.ms, "black", lw=2)
-    ax[1].set_xlabel("t (ms)")
-    ax[1].set_ylabel("tn")
-    #ax[0].set_ylim((-0.2, 1.2))
-    ax[1].grid()
-
-    ax[2].plot(state_monitor.vm[0] / b2.mV, state_monitor.th[0] / b2.ms, "black", lw=2)
-    ax[2].set_xlabel("t (ms)")
-    ax[2].set_ylabel("th")
-    #ax[0].set_ylim((-0.2, 1.2))
-    ax[2].grid()
-
-    plt.show()
 
 def simulate_HH_neuron_regular(input_current, simulation_time):
 
@@ -276,17 +234,28 @@ def getting_started():
     """
     An example to quickly get started with the Hodgkin-Huxley module.
     """
-    current = input_factory.get_step_current(10, 1510, b2.ms, 2.0 * b2.uA)
+    current =  input_factory.get_step_current(10, 45, b2.ms, 7.2 * b2.uA)
     #current = input_factory.get_zero_current()
 
-    state_monitor_regular = simulate_HH_neuron_regular(current, 1600 * b2.ms)
+    state_monitor_regular = simulate_HH_neuron_regular(current, 70 * b2.ms)
     plot_data(state_monitor_regular, type='regular', title="HH Neuron, step current, regular")
 
-    state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 1600 * b2.ms)
+    state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 70 * b2.ms)
     plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current, adaptative")
     
+def find_stable_pt():
 
+    current = input_factory.get_zero_current()
+    state_monitor_regular = simulate_HH_neuron_regular(current, 70 * b2.ms)
+    plot_data(state_monitor_regular, type='regular', title="HH Neuron, step current, regular")
+
+    state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 70 * b2.ms)
+    plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current, adaptative")
+
+    print("The variable stable points are: \n vm = -70 mV \n m = 0.0 \n h = 1.0 \
+    \n n = 0.0 \n p = 0.05")
 
 
 if __name__ == "__main__":
-    getting_started()
+    #getting_started()
+    find_stable_pt()
