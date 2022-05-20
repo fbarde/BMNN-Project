@@ -1,7 +1,11 @@
+from turtle import color
 import brian2 as b2
 import matplotlib.pyplot as plt
 import numpy as np
 import neurodynex3.tools.input_factory as input_factory
+
+
+############# DEFINITION OF THE PLOTTING FUNCTIONS ##############
 
 
 def plot_data(state_monitor, type='regular', title=None):
@@ -99,6 +103,37 @@ def plot_data(state_monitor, type='regular', title=None):
     plt.show()
 
 
+def plot_Vm_I(state_monitor, title=None):
+    """Plots the state_monitor variables ["vm", "I_e"] vs. time.
+
+    Args:
+        state_monitor (StateMonitor): the data to plot
+        title (string, optional): plot title to display
+    """
+
+    fig,ax = plt.subplots(2,1)
+
+    ax[0].plot(state_monitor.t / b2.ms, state_monitor.vm[0] / b2.mV, lw=2)
+    ax[0].set_xlabel("t [ms]")
+    ax[0].set_ylabel(r"V_m [mV]")
+    ax[0].grid()
+
+    ax[1].plot(state_monitor.t / b2.ms, state_monitor.I_e[0] / b2.uamp, "red", lw=2)
+    ax[1].axis((
+        0,
+        np.max(state_monitor.t / b2.ms),
+        min(state_monitor.I_e[0] / b2.uamp) * 1.1,
+        max(state_monitor.I_e[0] / b2.uamp) * 1.1
+    ))
+    ax[1].set_xlabel("t [ms]")
+    ax[1].set_ylabel("$I_{e}$ [$\mu$ A]")
+    ax[1].grid()
+
+    plt.show()
+
+
+########## DEFINITION OF THE HH NEURON MODELS ##############
+
 def simulate_HH_neuron_regular(input_current, simulation_time):
 
     """A Hodgkin-Huxley neuron implemented in Brian2.
@@ -166,7 +201,7 @@ def simulate_HH_neuron_regular(input_current, simulation_time):
 
 def simulate_HH_neuron_adaptative(input_current, simulation_time):
 
-    """A Hodgkin-Huxley neuron implemented in Brian2.
+    """An ADAPTATIVE Hodgkin-Huxley neuron implemented in Brian2.
 
     Args:
         input_current (TimedArray): Input current injected into the HH neuron
@@ -235,7 +270,7 @@ def getting_started():
     An example to quickly get started with the Hodgkin-Huxley module.
     """
     current =  input_factory.get_step_current(10, 45, b2.ms, 7.2 * b2.uA)
-    #current = input_factory.get_zero_current()
+    
 
     state_monitor_regular = simulate_HH_neuron_regular(current, 70 * b2.ms)
     plot_data(state_monitor_regular, type='regular', title="HH Neuron, step current, regular")
@@ -257,5 +292,6 @@ def find_stable_pt():
 
 
 if __name__ == "__main__":
-    #getting_started()
-    find_stable_pt()
+    getting_started()
+
+    #find_stable_pt()
