@@ -59,7 +59,23 @@ def find_tau_m():
     I_ext = 1.0
     current = input_factory.get_step_current(0, 100, b2.ms, I_ext * b2.uA)
     state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
-    plot_Vm_I(state_monitor_adaptative, r'Stimulation protocol: find parameter $\tau_m$.')
+    #plot_Vm_I(state_monitor_adaptative, r'Stimulation protocol: find parameter $\tau_m$.')
+
+    # Plot the figure with tau line
+    fig,ax = plt.subplots(2,1)
+    ax[0].plot(state_monitor_adaptative.t / b2.ms, state_monitor_adaptative.vm[0] / b2.mV, lw=2)
+    ax[0].set_xlabel("t [ms]")
+    ax[0].set_ylabel(r"$V_m$ [mV]")
+    ax[0].grid()
+    ax[0].hlines(y=-63.77, xmin=0, xmax=9.0, linewidth=1.8, color='r')
+    ax[0].vlines(x=9.0, ymin=-70, ymax=-63.77, linewidth=2, color='r')
+    ax[1].plot(state_monitor_adaptative.t / b2.ms, state_monitor_adaptative.I_e[0] / b2.uamp, "red", lw=2)
+    ax[1].set_xlabel("t [ms]")
+    ax[1].set_ylabel("$I_{e}$ [$\mu$ A]")
+    ax[1].grid()
+    plt.suptitle( r'Stimulation protocol: find parameter $\tau_m$.')
+    plt.show()
+
 
     Vm_start = -70*b2.mV
     Vm_const = max(state_monitor_adaptative.vm[0])
