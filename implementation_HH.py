@@ -115,20 +115,16 @@ def plot_Vm_I(state_monitor, title=None):
 
     ax[0].plot(state_monitor.t / b2.ms, state_monitor.vm[0] / b2.mV, lw=2)
     ax[0].set_xlabel("t [ms]")
-    ax[0].set_ylabel(r"V_m [mV]")
+    ax[0].set_ylabel(r"$V_m$ [mV]")
     ax[0].grid()
 
     ax[1].plot(state_monitor.t / b2.ms, state_monitor.I_e[0] / b2.uamp, "red", lw=2)
-    ax[1].axis((
-        0,
-        np.max(state_monitor.t / b2.ms),
-        min(state_monitor.I_e[0] / b2.uamp) * 1.1,
-        max(state_monitor.I_e[0] / b2.uamp) * 1.1
-    ))
     ax[1].set_xlabel("t [ms]")
     ax[1].set_ylabel("$I_{e}$ [$\mu$ A]")
     ax[1].grid()
 
+    if title is not None:
+        plt.suptitle(title)
     plt.show()
 
 
