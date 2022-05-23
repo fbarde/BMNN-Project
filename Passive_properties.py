@@ -25,17 +25,6 @@ def find_g_l(plot=True):
     """ Function to find parameter g_l"""
     # C'EST 1/R !!!
 
-    # Inject a very small input current such that the neuron doesn't fire
-    I_ext = 0.1
-    current = input_factory.get_step_current(10, 100, b2.ms, I_ext * b2.uA)
-    state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
-    if(plot==True):
-        plot_Vm_I(state_monitor_adaptative, r'Stimulation protocol: find parameter $g_l$.')
-
-    E_l = find_E_l(False)
-    Vm_const = max(state_monitor_adaptative.vm[0])
-
-    #g_l = I_ext*b2.uA/(Vm_const - E_l)
     g_l=1/find_R(False)
 
     if(plot==True):
@@ -44,16 +33,16 @@ def find_g_l(plot=True):
 
 def find_R(plot=True):
     """ Function to find parameter membrane resistance R"""
-    # Need to input a delta current: active for only one timestep
-    # FAUX !! JE DOIS FAIRE UN STEP CURRENT !!
+    # Need to input a step current: active for only one timestep
+    # NOT A DELTA INPUT CURRENT LIKE IN CORRECTION LIF !!
     I_ext = 1.0
-    current = input_factory.get_step_current(10, 50, b2.ms, I_ext * b2.uA)
+    current = input_factory.get_step_current(10, 80, b2.ms, I_ext * b2.uA)
     state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
     if(plot==True):
         plot_Vm_I(state_monitor_adaptative, r'Stimulation protocol: find parameter $R$.')
 
     v_max = max(state_monitor_adaptative.vm[0])
-    v_rest = -69.7* b2.mV
+    v_rest = find_E_l(False)
 
     R = (v_max - v_rest)/(I_ext * b2.uA)
     if(plot==True):
@@ -77,8 +66,8 @@ def find_tau_m(plot=True):
         ax[0].set_xlabel("t [ms]")
         ax[0].set_ylabel(r"$V_m$ [mV]")
         ax[0].grid()
-        ax[0].hlines(y=-63.77, xmin=0, xmax=9.0, linewidth=1.8, color='r')
-        ax[0].vlines(x=9.0, ymin=-70, ymax=-63.77, linewidth=2, color='r')
+        ax[0].hlines(y=-63.77, xmin=0, xmax=9.0, linewidth=1.8, color='g')
+        ax[0].vlines(x=9.0, ymin=-70, ymax=-63.77, linewidth=2, color='g')
         ax[1].plot(state_monitor_adaptative.t / b2.ms, state_monitor_adaptative.I_e[0] / b2.uamp, "red", lw=2)
         ax[1].set_xlabel("t [ms]")
         ax[1].set_ylabel("$I_{e}$ [$\mu$ A]")
@@ -96,7 +85,7 @@ def find_tau_m(plot=True):
     #tau_m = state_monitor_adaptative.t[idx_63]
     tau_m = 9.0 * b2.ms
     if(plot==True):
-        print(Vm_63)
+        print("63% of the maximal voltage = ",Vm_63)
         print("Parameter time constant of the membrane tau_m =" , tau_m)
     return tau_m
 
@@ -113,8 +102,8 @@ def find_C(plot=True):
 
 
 if __name__ == "__main__":
-    #find_E_l()
-    #find_g_l()
-    #find_R()
-    #find_tau_m()
+    find_E_l()
+    find_g_l()
+    find_R()
+    find_tau_m()
     find_C()
