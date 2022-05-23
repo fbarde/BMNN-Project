@@ -2,4 +2,29 @@ import brian2 as b2
 import matplotlib.pyplot as plt
 import numpy as np
 import neurodynex3.tools.input_factory as input_factory
+from Passive_properties import find_E_l, find_g_l
+from implementation_HH import simulate_HH_neuron_adaptative
 
+
+def sketch_f_vs_V():
+    E_l= find_E_l(False)/ b2.mV
+    g_l= find_g_l(False)/ b2.msiemens
+
+    # Arbitrary values for theta and delta
+    theta= -63
+    delat_T= 4
+
+    V=np.linspace(-70,-50,10)
+    I_ext = 0
+    f_v=np.zeros(len(V))
+
+    for i in range(len(V)):
+        f_v[i] = -g_l*(V[i] - E_l) + g_l * delat_T*np.exp((V[i]-theta)/delat_T) + I_ext
+
+    plt.plot(V, f_v)
+    plt.grid()
+    plt.show()
+
+
+if __name__ == "__main__":
+    sketch_f_vs_V()
