@@ -65,7 +65,7 @@ def simulate_HH_neuron_adaptative_change_parameter(input_current, simulation_tim
     betah = 4./(1+exp(-0.2*(vm/mV + 20)))/ms : Hz
     betam = .28*(vm/mV + 20)/(exp(0.2*(vm/mV + 20))-1)/ms : Hz
     betan = .5*exp(-(vm/mV + 50)/40)/ms : Hz
-    pinf = a/(exp(-0.1*(vm/mV+40))+1) : 1
+    pinf = a*1./(exp(-0.1*(vm/mV+40))+1) : 1
     tau_p = b*2000/(3.3 * exp((vm/mV + 20)/20)+exp(-(vm/mV + 20)/20))*ms : second
     dh/dt = alphah*(1-h)-betah*h : 1
     dm/dt = alpham*(1-m)-betam*m : 1
@@ -111,7 +111,7 @@ def first_condition(current) :
     plt.show()
 
 def second_condition(current) :
-    p_coef = np.array([0.5,1,2])
+    p_coef = np.array([0.75,1,1.25])
     plt.figure()
     legend =[]
     for j in range(len(p_coef)) :
@@ -120,21 +120,21 @@ def second_condition(current) :
         figure_adaptative(state_monitor_adaptative_changes,several_values = True)
         legend.append(p_coef[j]) 
     plt.legend(legend) 
-    plt.title("Adaptative figure for different values of coefficient multiplying the original pinf")
+    plt.title("Adaptative figure for different coefficient a, with pinf = a/(exp(-0.1(V+40))+1)")
     plt.show() 
 
 def third_condition(current) :
-    IM_coef = np.array([0.5,1,2])
+    p_coef = np.array([1,-1])
     plt.figure()
     legend =[]
-    for j in range(len(IM_coef)) :
-        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1600 * b2.ms,c=IM_coef[j])
+    for j in range(len(p_coef)) :
+        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1600 * b2.ms,a=p_coef[j])
         #plot_data(state_monitor_adaptative_changes, type='adaptative', title="HH Neuron, step current, adaptative")
         figure_adaptative(state_monitor_adaptative_changes,several_values = True)
-        legend.append("coefficient : {} ".format(IM_coef[j])) 
+        legend.append(p_coef[j]) 
     plt.legend(legend) 
-    plt.title("Adaptative figure for different values of coefficient multiplying the original IM")
-    plt.show()
+    plt.title("Adaptative figure for different coefficient a, with pinf = a/(exp(-0.1(V+40))+1)")
+    plt.show() 
 
 
 
