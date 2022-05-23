@@ -15,7 +15,7 @@ def sketch_f_vs_V(): # NOT USED
     delat_T= 4
 
     V=np.linspace(-70,-50,10)
-    I_ext = 0
+    I_ext = 1.3917
     f_v=np.zeros(len(V))
 
     for i in range(len(V)):
@@ -30,21 +30,26 @@ def find_theta_rh():
 
     plt.figure()
 
-    I = np.linspace(1.3917, 1.3917, 1)
-    for I_ext in I:
-        current = input_factory.get_step_current(10 ,60 , b2.ms, I_ext * b2.uA)
-        state_monitor = simulate_HH_neuron_adaptative(current, 157 * b2.ms)
+    #I = np.linspace(3.3917, 3.3917, 1)
+    #for I_ext in I:
+    current = input_factory.get_step_current(0 ,50 , b2.ms, 1.2 * b2.uA)
+    state_monitor = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
 
-        plt.plot(state_monitor.vm[0] / b2.mV, state_monitor.membrane_Im[0], lw=2)
+    f_V = np.gradient(state_monitor.vm[0] / b2.mV)
+    plt.plot(state_monitor.t / b2.mV, f_V, lw=2)
+    plt.plot(state_monitor.vm[0] / b2.mV, f_V, lw=2)
+    plt.plot(state_monitor.vm[0][0] / b2.mV, f_V[0], lw=5)
+    #plt.plot(state_monitor.vm[0] / b2.mV, state_monitor.membrane_Im[0]/b2.uamp, lw=2)
 
     plt.xlabel(r"$V_m$ [mV]")
     plt.ylabel(r"$f(V_m)$ [mV]")
     plt.grid()
-    plt.legend()
+    #plt.legend()
     #plt.suptitle( r'Stimulation protocol: find parameter $\tau_m$.')
     plt.show()
    
 
 if __name__ == "__main__":
+    #sketch_f_vs_V()
     find_theta_rh()
 
