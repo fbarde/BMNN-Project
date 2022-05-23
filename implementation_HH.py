@@ -41,6 +41,12 @@ def plot_data(state_monitor, type='regular', title=None):
 
     ax[2].plot(state_monitor.t / b2.ms, state_monitor.I_na[0] / b2.uamp, lw=2, label='$I_{Na}$')
     ax[2].plot(state_monitor.t / b2.ms, state_monitor.I_k[0] / b2.uamp, lw=2,label='$I_{K}$')
+    ax[2].axis((
+        0,
+        np.max(state_monitor.t / b2.ms),
+        min(state_monitor.I_na[0] / b2.uamp) * 1.1,
+        max(state_monitor.I_k[0] / b2.uamp) * 1.1
+    ))
     ax[2].set_xlabel("t [ms]")
     ax[2].set_ylabel("$I_{Na}$, $I_k$ [mA]")
     ax[2].legend(loc='upper right')
