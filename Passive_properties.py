@@ -10,12 +10,12 @@ def find_E_l(plot=True):
     """Function to find the parameter E_l"""
     # No input current to find E_l
     current = input_factory.get_zero_current()
-    state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
+    state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 1500 * b2.ms)
     if(plot==True):
         plot_Vm_I(state_monitor_adaptative, r'Stimulation protocol: find parameter $E_l$.')
     
     #E_l corresponds to the constant potential value that is reached
-    E_l =  max(state_monitor_adaptative.vm[0])
+    E_l =  state_monitor_adaptative.vm[0][-1]#max(state_monitor_adaptative.vm[0])
     if(plot==True):
         print("Parameter E_l = ", E_l)
     return E_l
@@ -59,6 +59,16 @@ def find_tau_m(plot=True):
     current = input_factory.get_step_current(0, 100, b2.ms, I_ext * b2.uA)
     state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
    
+
+    Vm_start = -70.60737 * b2.mV #find_E_l(False)
+    Vm_const = max(state_monitor_adaptative.vm[0])
+    Vm_63 = Vm_start-(Vm_start-Vm_const)*0.63
+    
+    #idx_63 = np.where(state_monitor_adaptative.vm[0]==-63.77*b2.mV)[0]
+    #print(idx_63)
+    #tau_m = state_monitor_adaptative.t[idx_63]
+    tau_m = 9.2 * b2.ms
+
     if(plot==True):
         # Plot the figure with tau line
         fig,ax = plt.subplots(2,1)
@@ -66,8 +76,8 @@ def find_tau_m(plot=True):
         ax[0].set_xlabel("t [ms]")
         ax[0].set_ylabel(r"$V_m$ [mV]")
         ax[0].grid()
-        ax[0].hlines(y=-63.77, xmin=0, xmax=9.0, linewidth=1.8, color='g')
-        ax[0].vlines(x=9.0, ymin=-70, ymax=-63.77, linewidth=2, color='g')
+        ax[0].hlines(y=Vm_63/b2.mV, xmin=0, xmax=tau_m/b2.ms, linewidth=1.8, color='g')
+        ax[0].vlines(x=tau_m/b2.ms, ymin=Vm_start/b2.mV, ymax=Vm_63/b2.mV, linewidth=2, color='g')
         ax[1].plot(state_monitor_adaptative.t / b2.ms, state_monitor_adaptative.I_e[0] / b2.uamp, "red", lw=2)
         ax[1].set_xlabel("t [ms]")
         ax[1].set_ylabel("$I_{e}$ [$\mu$ A]")
@@ -76,14 +86,7 @@ def find_tau_m(plot=True):
         plt.show()
 
 
-    Vm_start = -70*b2.mV
-    Vm_const = max(state_monitor_adaptative.vm[0])
-    Vm_63 = Vm_start-(Vm_start-Vm_const)*0.63
     
-    #idx_63 = np.where(state_monitor_adaptative.vm[0]==-63.77*b2.mV)[0]
-    #print(idx_63)
-    #tau_m = state_monitor_adaptative.t[idx_63]
-    tau_m = 9.0 * b2.ms
     if(plot==True):
         print("63% of the maximal voltage = ",Vm_63)
         print("Parameter time constant of the membrane tau_m =" , tau_m)
