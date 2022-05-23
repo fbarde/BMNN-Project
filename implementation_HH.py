@@ -41,12 +41,6 @@ def plot_data(state_monitor, type='regular', title=None):
 
     ax[2].plot(state_monitor.t / b2.ms, state_monitor.I_na[0] / b2.uamp, lw=2, label='$I_{Na}$')
     ax[2].plot(state_monitor.t / b2.ms, state_monitor.I_k[0] / b2.uamp, lw=2,label='$I_{K}$')
-    ax[2].axis((
-        0,
-        np.max(state_monitor.t / b2.ms),
-        min(state_monitor.I_na[0] / b2.uamp) * 1.1,
-        max(state_monitor.I_k[0] / b2.uamp) * 1.1
-    ))
     ax[2].set_xlabel("t [ms]")
     ax[2].set_ylabel("$I_{Na}$, $I_k$ [mA]")
     ax[2].legend(loc='upper right')
@@ -155,7 +149,7 @@ def simulate_HH_neuron_regular(input_current, simulation_time):
     # forming HH model with differential equations
     eqs = """
     I_e = input_current(t,i) : amp
-    membrane_Im = I_e - I_na + gl*(El-vm) - I_k  : amp
+    membrane_Im = -gl*(vm-El) - I_na - I_k + I_e : amp
     alphah = .128*exp(-(vm+43*mV)/(18*mV))/ms : Hz
     alpham = -.32*(47*mV+vm)/(exp(-0.25*(vm/mV+47))-1)/mV/ms : Hz
     alphan = -.032*(45*mV+vm)/(exp(-0.2*(vm/mV+45))-1)/mV/ms : Hz
@@ -166,8 +160,8 @@ def simulate_HH_neuron_regular(input_current, simulation_time):
     dm/dt = alpham*(1-m)-betam*m : 1
     dn/dt = alphan*(1-n)-betan*n : 1
     dvm/dt = membrane_Im/C : volt
-    I_na = -gNa*m**3*h*(ENa-vm) : amp
-    I_k = -gK*n**4*(EK-vm) : amp
+    I_na = gNa*(m**3)*h*(vm-ENa) : amp
+    I_k = gK*(n**4)*(vm-EK) : amp
     minf = alpham/(alpham+betam) : 1
     ninf = alphan/(alphan+betan) : 1
     hinf = alphah/(alphah+betah) : 1
@@ -205,11 +199,11 @@ def simulate_HH_neuron_adaptative(input_current, simulation_time):
 
     Returns:
         StateMonitor: Brian2 StateMonitor with recorded fields
-        ["vm", "I_e", "I_na", "I_k", "I_m", "m", "n", "h", "p", "dvm/dt"]
+        ["vm", "I_e", "I_na", "I_k", "I_m", "m", "n", "h", "p", "membrane_Im"]
     """
 
     # neuron parameters
-    El = -69 * b2.mV
+    El = -70 * b2.mV
     EK = -90 * b2.mV
     ENa = 50 * b2.mV
     gl = 0.1 * b2.msiemens
@@ -221,7 +215,7 @@ def simulate_HH_neuron_adaptative(input_current, simulation_time):
     # forming HH model with differential equations
     eqs = """
     I_e = input_current(t,i) : amp
-    membrane_Im = I_e - I_na + gl*(El-vm) - I_k - I_m : amp
+    membrane_Im = -gl*(vm-El) - I_na - I_k - I_m + I_e : amp
     alphah = .128*exp(-(vm+43*mV)/(18*mV))/ms : Hz
     alpham = -.32*(47*mV+vm)/(exp(-0.25*(vm/mV+47))-1)/mV/ms : Hz
     alphan = -.032*(45*mV+vm)/(exp(-0.2*(vm/mV+45))-1)/mV/ms : Hz
@@ -235,23 +229,22 @@ def simulate_HH_neuron_adaptative(input_current, simulation_time):
     dn/dt = alphan*(1-n)-betan*n : 1
     dp/dt = (pinf-p)/tau_p : 1
     dvm/dt = membrane_Im/C : volt
-    I_na = -gNa*m**3*h*(ENa-vm) : amp
-    I_k = -gK*n**4*(EK-vm) : amp
-    I_m = -gM*p*(EK-vm) : amp
-
+    I_na = gNa*(m**3)*h*(vm-ENa) : amp
+    I_k = gK*(n**4)*(vm-EK) : amp
+    I_m = gM*p*(vm-EK) : amp
     """
 
     neuron = b2.NeuronGroup(1, eqs, method="exponential_euler")
 
     # parameter initialization
-    neuron.vm = -70* b2.mV
+    neuron.vm = -70.60737* b2.mV
     neuron.m = 0.0
     neuron.h = 1.0
     neuron.n = 0.0
     neuron.p = 0.05
 
     # tracking parameters
-    st_mon = b2.StateMonitor(neuron, ["vm", "I_e","I_na", "I_k", "I_m", "m", "n", "h", "p", "dvm/dt"], record=True)
+    st_mon = b2.StateMonitor(neuron, ["vm", "I_e","I_na", "I_k", "I_m", "m", "n", "h", "p", "membrane_Im"], record=True)
 
     # running the simulation
     hh_net = b2.Network(neuron)
@@ -265,13 +258,15 @@ def getting_started():
     """
     An example to quickly get started with the Hodgkin-Huxley module.
     """
-    current =  input_factory.get_step_current(10, 45, b2.ms, 7.2 * b2.uA)
+    current_r =  input_factory.get_step_current(10, 100, b2.ms, 2.0 * b2.uA)
     
 
-    state_monitor_regular = simulate_HH_neuron_regular(current, 70 * b2.ms)
+    state_monitor_regular = simulate_HH_neuron_regular(current_r, 100 * b2.ms)
     plot_data(state_monitor_regular, type='regular', title="HH Neuron, step current, regular")
 
-    state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 70 * b2.ms)
+    current_a =  input_factory.get_step_current(0, 1500, b2.ms, 2.0 * b2.uA)
+
+    state_monitor_adaptative = simulate_HH_neuron_adaptative(current_a, 1500 * b2.ms)
     plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current, adaptative")
     
 def find_stable_pt():
@@ -280,14 +275,17 @@ def find_stable_pt():
     state_monitor_regular = simulate_HH_neuron_regular(current, 70 * b2.ms)
     plot_data(state_monitor_regular, type='regular', title="HH Neuron, step current, regular")
 
-    state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 70 * b2.ms)
+    print("The variable stable points for REGULAR neuron are: \n vm = -70 mV \n m = 0.0 \n h = 1.0 \
+    \n n = 0.0 ")
+
+    state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 1500 * b2.ms)
     plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current, adaptative")
 
-    print("The variable stable points are: \n vm = -70 mV \n m = 0.0 \n h = 1.0 \
+    #print(state_monitor_adaptative.vm[0][-1])
+    print("The variable stable points for ADAPTATIVE neuron are: \n vm = -70.60737 mV \n m = 0.0 \n h = 1.0 \
     \n n = 0.0 \n p = 0.05")
 
 
 if __name__ == "__main__":
     getting_started()
-
     #find_stable_pt()
