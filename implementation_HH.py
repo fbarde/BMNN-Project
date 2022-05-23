@@ -205,7 +205,7 @@ def simulate_HH_neuron_adaptative(input_current, simulation_time):
 
     Returns:
         StateMonitor: Brian2 StateMonitor with recorded fields
-        ["vm", "I_e", "I_na", "I_k", "I_m", "m", "n", "h", "p"]
+        ["vm", "I_e", "I_na", "I_k", "I_m", "m", "n", "h", "p", "dvm/dt"]
     """
 
     # neuron parameters
@@ -251,7 +251,7 @@ def simulate_HH_neuron_adaptative(input_current, simulation_time):
     neuron.p = 0.05
 
     # tracking parameters
-    st_mon = b2.StateMonitor(neuron, ["vm", "I_e","I_na", "I_k", "I_m", "m", "n", "h", "p"], record=True)
+    st_mon = b2.StateMonitor(neuron, ["vm", "I_e","I_na", "I_k", "I_m", "m", "n", "h", "p", "dvm/dt"], record=True)
 
     # running the simulation
     hh_net = b2.Network(neuron)
