@@ -41,12 +41,12 @@ def plot_data(state_monitor, type='regular', title=None):
 
     ax[2].plot(state_monitor.t / b2.ms, state_monitor.I_na[0] / b2.uamp, lw=2, label='$I_{Na}$')
     ax[2].plot(state_monitor.t / b2.ms, state_monitor.I_k[0] / b2.uamp, lw=2,label='$I_{K}$')
-    ax[2].axis((
-        0,
-        np.max(state_monitor.t / b2.ms),
-        min(state_monitor.I_na[0] / b2.uamp) * 1.1,
-        max(state_monitor.I_k[0] / b2.uamp) * 1.1
-    ))
+    #ax[2].axis((
+        #0,
+        #np.max(state_monitor.t / b2.ms),
+        #min(state_monitor.I_na[0] / b2.uamp) * 1.1,
+        #max(state_monitor.I_k[0] / b2.uamp) * 1.1
+    #))
     ax[2].set_xlabel("t [ms]")
     ax[2].set_ylabel("$I_{Na}$, $I_k$ [mA]")
     ax[2].legend(loc='upper right')
@@ -155,7 +155,7 @@ def simulate_HH_neuron_regular(input_current, simulation_time):
     # forming HH model with differential equations
     eqs = """
     I_e = input_current(t,i) : amp
-    membrane_Im = -gl*(vm-El) - I_na - I_k + I_e : amp
+    membrane_Im = -gl*(vm-El) +I_na +I_k + I_e : amp
     alphah = .128*exp(-(vm+43*mV)/(18*mV))/ms : Hz
     alpham = -.32*(47*mV+vm)/(exp(-0.25*(vm/mV+47))-1)/mV/ms : Hz
     alphan = -.032*(45*mV+vm)/(exp(-0.2*(vm/mV+45))-1)/mV/ms : Hz
@@ -166,8 +166,8 @@ def simulate_HH_neuron_regular(input_current, simulation_time):
     dm/dt = alpham*(1-m)-betam*m : 1
     dn/dt = alphan*(1-n)-betan*n : 1
     dvm/dt = membrane_Im/C : volt
-    I_na = gNa*(m**3)*h*(vm-ENa) : amp
-    I_k = gK*(n**4)*(vm-EK) : amp
+    I_na = -gNa*(m**3)*h*(vm-ENa) : amp
+    I_k = -gK*(n**4)*(vm-EK) : amp
     minf = alpham/(alpham+betam) : 1
     ninf = alphan/(alphan+betan) : 1
     hinf = alphah/(alphah+betah) : 1
@@ -221,7 +221,7 @@ def simulate_HH_neuron_adaptative(input_current, simulation_time):
     # forming HH model with differential equations
     eqs = """
     I_e = input_current(t,i) : amp
-    membrane_Im = -gl*(vm-El) - I_na - I_k - I_m + I_e : amp
+    membrane_Im = -gl*(vm-El) + I_na + I_k +I_m + I_e : amp
     alphah = .128*exp(-(vm+43*mV)/(18*mV))/ms : Hz
     alpham = -.32*(47*mV+vm)/(exp(-0.25*(vm/mV+47))-1)/mV/ms : Hz
     alphan = -.032*(45*mV+vm)/(exp(-0.2*(vm/mV+45))-1)/mV/ms : Hz
@@ -235,9 +235,9 @@ def simulate_HH_neuron_adaptative(input_current, simulation_time):
     dn/dt = alphan*(1-n)-betan*n : 1
     dp/dt = (pinf-p)/tau_p : 1
     dvm/dt = membrane_Im/C : volt
-    I_na = gNa*(m**3)*h*(vm-ENa) : amp
-    I_k = gK*(n**4)*(vm-EK) : amp
-    I_m = gM*p*(vm-EK) : amp
+    I_na = -gNa*(m**3)*h*(vm-ENa) : amp
+    I_k = -gK*(n**4)*(vm-EK) : amp
+    I_m = -gM*p*(vm-EK) : amp
     """
 
     neuron = b2.NeuronGroup(1, eqs, method="exponential_euler")

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import neurodynex3.tools.input_factory as input_factory
 from Passive_properties import find_E_l, find_g_l
-from implementation_HH import simulate_HH_neuron_adaptative
+from implementation_HH import plot_data, simulate_HH_neuron_adaptative
 
 
 def sketch_f_vs_V(): # NOT USED 
@@ -32,14 +32,21 @@ def find_theta_rh():
 
     #I = np.linspace(3.3917, 3.3917, 1)
     #for I_ext in I:
-    current = input_factory.get_step_current(0 ,50 , b2.ms, 1.2 * b2.uA)
-    state_monitor = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
 
-    f_V = np.gradient(state_monitor.vm[0] / b2.mV)
-    plt.plot(state_monitor.t / b2.mV, f_V, lw=2)
-    plt.plot(state_monitor.vm[0] / b2.mV, f_V, lw=2)
-    plt.plot(state_monitor.vm[0][0] / b2.mV, f_V[0], lw=5)
-    #plt.plot(state_monitor.vm[0] / b2.mV, state_monitor.membrane_Im[0]/b2.uamp, lw=2)
+    current = input_factory.get_step_current(0 ,50 , b2.ms, 1.5 * b2.uA)
+    state_monitor = simulate_HH_neuron_adaptative(current, 50 * b2.ms)
+    plot_data(state_monitor, type='adaptative', title=None)
+    plt.plot(state_monitor.vm[0] / b2.mV, state_monitor.membrane_Im[0]/b2.uamp, lw=2)
+    
+
+    #current = input_factory.get_step_current(0 ,50 , b2.ms, 1.2 * b2.uA)
+    #state_monitor = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
+
+    #f_V = np.gradient(state_monitor.vm[0] / b2.mV)
+    #plt.plot(state_monitor.t / b2.mV, f_V, lw=2)
+    #plt.plot(state_monitor.vm[0] / b2.mV, f_V, lw=2)
+    #plt.plot(state_monitor.vm[0][0] / b2.mV, f_V[0], lw=5)
+    
 
     plt.xlabel(r"$V_m$ [mV]")
     plt.ylabel(r"$f(V_m)$ [mV]")

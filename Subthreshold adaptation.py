@@ -21,7 +21,7 @@ def plotI_V(current):
     y = state_monitor.vm[0][400:] / b2.mV
     slope, intercept, r_value, p_value, std_err = linregress(x, y)
     gl = find_g_l(False)/b2.uS
-    a = 1/slope-gl
+    a = 1/slope-gl*10**(-3)
     return a
 
 
@@ -29,7 +29,7 @@ def plotI_V(current):
 if __name__ == "__main__":
     current = input_factory.get_ramp_current(0,10000 , b2.ms, 0 * b2.uA,1.2* b2.uA)
     a = plotI_V(current)
-    print("The value of the coefficient a is :",a, "microsiemens")
+    print("The value of the coefficient a is :",a, "millisiemens")
     
 
 
