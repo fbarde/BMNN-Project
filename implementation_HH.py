@@ -294,4 +294,4 @@ def find_stable_pt():
 
 if __name__ == "__main__":
     getting_started()
-    #find_stable_pt()
+    find_stable_pt()

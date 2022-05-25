@@ -67,7 +67,7 @@ def find_tau_m(plot=True):
     #idx_63 = np.where(state_monitor_adaptative.vm[0]==-63.77*b2.mV)[0]
     #print(idx_63)
     #tau_m = state_monitor_adaptative.t[idx_63]
-    tau_m = 9.2 * b2.ms
+    tau_m = 9.0 * b2.ms
 
     if(plot==True):
         # Plot the figure with tau line
