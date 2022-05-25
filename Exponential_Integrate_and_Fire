@@ -1,10 +1,12 @@
+from xml.etree import ElementPath
 import brian2 as b2
 import matplotlib.pyplot as plt
 import numpy as np
 import neurodynex3.tools.input_factory as input_factory
 from Passive_properties import find_E_l, find_g_l
-from implementation_HH import plot_data, simulate_HH_neuron_adaptative
-
+from implementation_HH import plot_data, simulate_HH_neuron_adaptative,plot_Vm_I
+from scipy.signal import find_peaks
+from scipy.optimize import fsolve
 
 def sketch_f_vs_V(): # NOT USED 
     E_l= find_E_l(False)/ b2.mV
@@ -26,37 +28,81 @@ def sketch_f_vs_V(): # NOT USED
     plt.show()
 
 
-def find_theta_rh():
+def find_theta_rh(plot=True):
 
-    plt.figure()
-
-    #I = np.linspace(3.3917, 3.3917, 1)
+    
+    #I = np.linspace(1.37, 1.4, 10)
     #for I_ext in I:
+    I_ext=1.5
 
-    current = input_factory.get_step_current(0 ,50 , b2.ms, 1.5 * b2.uA)
+    current = input_factory.get_step_current(0 ,50 , b2.ms, I_ext * b2.uA)
     state_monitor = simulate_HH_neuron_adaptative(current, 50 * b2.ms)
-    plot_data(state_monitor, type='adaptative', title=None)
-    plt.plot(state_monitor.vm[0] / b2.mV, state_monitor.membrane_Im[0]/b2.uamp, lw=2)
+    #plot_data(state_monitor, type='adaptative', title=None)
+    
+    theta_rh = state_monitor.vm[0][np.argmin(state_monitor.membrane_Im[0]/b2.uamp)]
+
+    if (plt.plot==True):
+        plt.figure()
+        plt.plot(state_monitor.vm[0] / b2.mV, state_monitor.membrane_Im[0]/b2.uamp, lw=2, label=r'$I_{ext}$=1.5')
+            
+        #current = input_factory.get_step_current(0 ,50 , b2.ms, 1.2 * b2.uA)
+        #state_monitor = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
+        plt.xlabel(r"$V_m$ [mV]")
+        plt.ylabel(r"$f(V_m)$ [$\mu$A]")
+        plt.grid()
+        plt.legend()
+        plt.suptitle( r'Stimulation protocol: find parameter $\theta_{rh}$.')
+        plt.show()
+
+        
+        print('The value of theta_rh is', theta_rh)
+
+    return theta_rh
     
 
-    #current = input_factory.get_step_current(0 ,50 , b2.ms, 1.2 * b2.uA)
-    #state_monitor = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
 
-    #f_V = np.gradient(state_monitor.vm[0] / b2.mV)
-    #plt.plot(state_monitor.t / b2.mV, f_V, lw=2)
-    #plt.plot(state_monitor.vm[0] / b2.mV, f_V, lw=2)
-    #plt.plot(state_monitor.vm[0][0] / b2.mV, f_V[0], lw=5)
+def find_Vs():
+
+    #I_ext=1.3
+
+    I = np.linspace(10.642, 10.6424, 10)
+    for I_ext in I:
     
+        current = input_factory.get_step_current(10 ,11 , b2.ms, I_ext * b2.uA)
+        state_monitor = simulate_HH_neuron_adaptative(current, 50 * b2.ms)
+        #plot_data(state_monitor, type='adaptative', title=None)
+        Volt= state_monitor.vm[0] / b2.mV
+        indice_spike = find_peaks(Volt, height=0)
+        print(indice_spike)
+        print(I_ext)
+        V_S = max(state_monitor.vm[0])
+        print('V_s=',V_S)
+        #plot_Vm_I(state_monitor, title=f'I_ext = {I_ext}')
+        
+def function_f_V(delta_T):
 
-    plt.xlabel(r"$V_m$ [mV]")
-    plt.ylabel(r"$f(V_m)$ [mV]")
-    plt.grid()
-    #plt.legend()
-    #plt.suptitle( r'Stimulation protocol: find parameter $\tau_m$.')
-    plt.show()
-   
+    E_l= find_E_l(False)/ b2.mV
+    g_l= find_g_l(False)/ b2.msiemens
+    V_S= -51.26383235
+    theta_rh =find_theta_rh(False)/ b2.mV
+
+    return -g_l*(V_S - E_l) + g_l * delta_T*np.exp((V_S-theta_rh)/delta_T)
+
+
+
+def find_delta_T():
+
+    delta_T = fsolve(function_f_V,[1.0, 5.0])
+    print('Solution delta_T:' ,delta_T[0])
+    return delta_T[0]
+
+
+
+
 
 if __name__ == "__main__":
     #sketch_f_vs_V()
-    find_theta_rh()
+    #find_theta_rh()
+    #find_Vs()
+    find_delta_T()
 
