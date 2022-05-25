@@ -15,8 +15,8 @@ if __name__ == "__main__":
     #plot_data_adaptive(HH_state_monitor_adaptive, 1500, title="HH Neuron, adaptive")
 
     Adex_state_monitor, spike_monitor = AdEx.simulate_AdEx_neuron(I_stim=test_current, simulation_time=1500 * b2.ms, tau_m=9.2* b2.ms, 
-    R=9.49628545* b2.kohm, v_rest=-70.60737437 * b2.mV, v_rheobase=-55.39 * b2.mV, delta_T= 1.78 * b2.mV , a=0.010655855814888468 * b2.mS, 
-    tau_w=70* b2.ms, v_spike = 30 * b2.mV, b= 2* b2.pA, v_reset= -70.70 * b2.mV) #-68.0 * b2.mV 
+    R=9.49628545* b2.kohm, v_rest=-70.60737437 * b2.mV, v_rheobase=-55.75543484 * b2.mV, delta_T= 1.9633764705215981* b2.mV , a=10655.855814888468 * b2.nS, 
+    tau_w=70* b2.ms, v_spike = 30 * b2.mV, b= 10* b2.pA, v_reset= -70.60737437 * b2.mV) #-68.0 * b2.mV 
     plt.figure(figsize=(15,10))
     plt.plot(HH_state_monitor_adaptive.t / b2.ms, HH_state_monitor_adaptive.vm[0] / b2.mV, '-b')
     plt.plot(Adex_state_monitor.t / b2.ms, Adex_state_monitor.v[0] / b2.mV, '-g')
