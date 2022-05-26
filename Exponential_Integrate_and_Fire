@@ -41,14 +41,15 @@ def find_theta_rh(plot=True):
     
     theta_rh = state_monitor.vm[0][np.argmin(state_monitor.membrane_Im[0]/b2.uamp)]
 
-    if (plt.plot==True):
+    if (plot==True):
         plt.figure()
-        plt.plot(state_monitor.vm[0] / b2.mV, state_monitor.membrane_Im[0]/b2.uamp, lw=2, label=r'$I_{ext}$=1.5')
+        plt.plot(state_monitor.vm[0] / b2.mV, state_monitor.membrane_Im[0]/b2.uamp, lw=2, label=r'$I_{ext}$=1.5 [$\mu$A]')
             
         #current = input_factory.get_step_current(0 ,50 , b2.ms, 1.2 * b2.uA)
         #state_monitor = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
         plt.xlabel(r"$V_m$ [mV]")
         plt.ylabel(r"$f(V_m)$ [$\mu$A]")
+        plt.vlines(x=theta_rh/b2.mV, ymin=-0.5, ymax=7, linewidth=2, colors='g', linestyles='dashed')
         plt.grid()
         plt.legend()
         plt.suptitle( r'Stimulation protocol: find parameter $\theta_{rh}$.')
@@ -102,7 +103,7 @@ def find_delta_T():
 
 if __name__ == "__main__":
     #sketch_f_vs_V()
-    #find_theta_rh()
+    find_theta_rh()
     #find_Vs()
-    find_delta_T()
+    #find_delta_T()
 
