@@ -49,7 +49,7 @@ def find_theta_rh(plot=True):
         #state_monitor = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
         plt.xlabel(r"$V_m$ [mV]")
         plt.ylabel(r"$f(V_m)$ [$\mu$A]")
-        plt.vlines(x=theta_rh/b2.mV, ymin=-0.5, ymax=7, linewidth=2, colors='g', linestyles='dashed')
+        plt.vlines(x=theta_rh/b2.mV, ymin=-0.5, ymax=7, linewidth=2, colors='g', linestyles='dashed', label=r'$\theta_{rh}=-55.75$ [mV]')
         plt.grid()
         plt.legend()
         plt.suptitle( r'Stimulation protocol: find parameter $\theta_{rh}$.')
