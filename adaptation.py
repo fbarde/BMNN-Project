@@ -12,7 +12,7 @@ def spike_timings(state_monitor) :
     Volt= state_monitor.vm[0] / b2.mV
     time = state_monitor.t / b2.ms
     time_spike = []
-    indice_spike = find_peaks(Volt)
+    indice_spike = find_peaks(Volt,height= -40)
     time_spike = time[indice_spike[0]]
     diff_spiking_time = []
     for i in range(len(time_spike)-1) :
