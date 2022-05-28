@@ -8,22 +8,32 @@ from implementation_HH import plot_data, simulate_HH_neuron_adaptative,plot_Vm_I
 from scipy.signal import find_peaks
 from scipy.optimize import fsolve
 
-def sketch_f_vs_V(): # NOT USED 
-    E_l= find_E_l(False)/ b2.mV
-    g_l= find_g_l(False)/ b2.msiemens
+def sketch_f_vs_V():  
+    E_l= -70.60737437#find_E_l(False)/ b2.mV
+    g_l= 105.3043#find_g_l(False)/ b2.msiemens
+    V_S= -51.26383235
 
-    # Arbitrary values for theta and delta
-    theta= -63
-    delat_T= 4
+    # Found values for theta and delta
+    theta_rh= -55.75543484#find_theta_rh(False)/b2.mV
+    delta_T= 1.9633764705215981#find_delta_T()/b2.ms
 
-    V=np.linspace(-70,-50,10)
-    I_ext = 1.3917
+    V=np.linspace(-75,-50,50)
+    
     f_v=np.zeros(len(V))
 
     for i in range(len(V)):
-        f_v[i] = -g_l*(V[i] - E_l) + g_l * delat_T*np.exp((V[i]-theta)/delat_T) + I_ext
+        f_v[i] = -g_l*(V[i] - E_l) + g_l * delta_T*np.exp((V[i]-theta_rh)/delta_T) #+ I_ext
 
-    plt.plot(V, f_v)
+    plt.figure()
+    plt.plot(V, f_v, lw=2)
+    plt.hlines(y=0, xmin=-75, xmax=-45, colors='b', linestyles='dashed',lw=1.5)
+    plt.vlines(x=E_l, ymin=-1500, ymax=2000, colors='k',linestyles='dashdot', lw=1.5, label=r'$E_l=-70.6073$ [mV]' )
+    plt.vlines(x=theta_rh, ymin=-1500, ymax=2000, colors='g',linestyles='dashdot', lw=1.5, label=r'$\theta_{rh}=-55.7554$ [mV]' )
+    plt.vlines(x=V_S, ymin=-1500, ymax=2000, colors='r',linestyles='dashdot', lw=1.5, label=r'$V_S=-51.2638$ [mV]' )
+    plt.xlabel(r'Membrane potential $V_m$ [mV]')
+    plt.ylabel(r'Membrane dynamics $f(V_m)$ [$\mu$A]')
+    plt.suptitle('Membrane dynamics as a function of V, and remarquable parameters.')
+    plt.legend()
     plt.grid()
     plt.show()
 
@@ -49,6 +59,7 @@ def find_theta_rh(plot=True):
         #state_monitor = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
         plt.xlabel(r"$V_m$ [mV]")
         plt.ylabel(r"$f(V_m)$ [$\mu$A]")
+        plt.hlines(y=0, xmin=-75, xmax=-45, colors='b', linestyles='dashed',lw=1.5)
         plt.vlines(x=theta_rh/b2.mV, ymin=-0.5, ymax=7, linewidth=2, colors='g', linestyles='dashed', label=r'$\theta_{rh}=-55.75$ [mV]')
         plt.grid()
         plt.legend()
@@ -102,8 +113,9 @@ def find_delta_T():
 
 
 if __name__ == "__main__":
-    #sketch_f_vs_V()
     find_theta_rh()
-    #find_Vs()
-    #find_delta_T()
+    find_Vs()
+    find_delta_T()
+    sketch_f_vs_V()
+
 

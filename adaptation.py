@@ -26,8 +26,8 @@ def figure_adaptative(state_monitor,several_plot = False) :
     if several_plot == False : # case where i just have one value of coefficient a,b,c respectively.
         plt.figure()
     plt.plot(time_spike[1:],diff_spiking_time)
-    plt.xlabel("t [ms]")
-    plt.ylabel("delta t [ms]")
+    plt.xlabel(r"$t$ [ms]")
+    plt.ylabel(r"$\Delta t$ [ms]")
     plt.grid()
     if several_plot == False : # case where i just have one value of coefficient a,b,c respectively.
         plt.show()
