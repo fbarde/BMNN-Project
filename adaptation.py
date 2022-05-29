@@ -1,3 +1,5 @@
+from cProfile import label
+from tkinter import font
 import brian2 as b2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,17 +28,18 @@ def figure_adaptative(state_monitor,several_plot = False) :
     if several_plot == False : # case where i just have one value of coefficient a,b,c respectively.
         plt.figure()
     plt.plot(time_spike[1:],diff_spiking_time)
-    plt.xlabel(r"$t$ [ms]")
-    plt.ylabel(r"$\Delta t$ [ms]")
+    plt.xlabel(r"$t$ [ms]",size=13)
+    plt.ylabel(r"$\Delta t$ [ms]",size=13)
     plt.grid()
     if several_plot == False : # case where i just have one value of coefficient a,b,c respectively.
+        plt.title("Adaptive behavior for HH neuron model",size = 14)
         plt.show()
 
 def volting_trace(state_monitor) :
     plt.figure()
     plt.plot(state_monitor.t / b2.ms, state_monitor.vm[0] / b2.mV, lw=2)
-    plt.xlabel("t [ms]")
-    plt.ylabel("v [mV]")
+    plt.xlabel("t [ms]",size=13)
+    plt.ylabel("v [mV]",size=13)
     plt.title("Voltage trace")
     plt.grid()
     plt.show()
@@ -112,35 +115,52 @@ def first_condition(current) :
     plt.figure()
     legend =[]
     for j in range(len(t_coef)) :
-        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1600 * b2.ms,b=t_coef[j])
-        #plot_data(state_monitor_adaptative_changes, type='adaptative', title="HH Neuron, step current, adaptative")
+        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,b=t_coef[j])
         figure_adaptative(state_monitor_adaptative_changes,several_plot = True)
-        legend.append(t_coef[j]) 
+        legend.append("b = " + str(t_coef[j]))
     plt.legend(legend) 
-    plt.title("Adaptative figure for different values of coefficient multiplying the original tau_p")
+    title = r"$\tau_p = \frac{b\cdot2000}{3.3exp((V+20)/20) + exp(-(V+20)/20)}$"
+    #plt.title(title)
+    plt.title("Adaptive behavior changing " + title,size = 14)
+    plt.show()
+
+
+    #voltage trace 
+    fig,axs = plt.subplots(len(t_coef),sharex=True,sharey=True)
+    colors =["b","orange","g"]
+    for j in range(len(t_coef)) :
+        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,b=t_coef[j])
+        axs[j].plot(state_monitor_adaptative_changes.t / b2.ms, state_monitor_adaptative_changes.vm[0] / b2.mV,label="b = " +str(t_coef[j]),color=colors[j],lw=2)
+        axs[j].set_xlabel("t [ms]")
+        axs[j].set_ylabel("Vm [mV]")
+        axs[j].legend(loc="upper right")
+        axs[j].grid()
     plt.show()
 
 def second_condition(current) :
+    #adaptive figure
     p_coef = np.array([0.75,1,1.25])
     plt.figure()
     legend =[]
     for j in range(len(p_coef)) :
-        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1600 * b2.ms,a=p_coef[j])
-        #plot_data(state_monitor_adaptative_changes, type='adaptative', title="HH Neuron, step current, adaptative")
+        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,a=p_coef[j])
         figure_adaptative(state_monitor_adaptative_changes,several_plot = True)
-        legend.append(p_coef[j]) 
+        legend.append("a = " + str(p_coef[j])) 
     plt.legend(legend) 
-    plt.title("Adaptative figure for different coefficient a, with pinf = a/(exp(-0.1(V+40))+1)")
+    title = r"$p_{\infty} = \frac{a}{exp(-0.1(V+40))+1)}$"
+    plt.title("Adaptive behavior changing " + title,size = 14)
     plt.show() 
 
-    fig,ax = plt.subplots(len(p_coef),1)
+    #voltage trace 
+    fig,axs = plt.subplots(len(p_coef),sharex=True,sharey=True)
+    colors =["b","orange","g"]
     for j in range(len(p_coef)) :
-        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1600 * b2.ms,a=p_coef[j])
-        ax[j].plot(state_monitor_adaptative_changes.t / b2.ms, state_monitor_adaptative_changes.vm[0] / b2.mV, lw=2)
-        ax[j].set_xlabel("t [ms]")
-        ax[j].set_ylabel("v [mV]")
-        #ax[j].set_legend(p_coef[j])
-        ax[j].grid()
+        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,a=p_coef[j])
+        axs[j].plot(state_monitor_adaptative_changes.t / b2.ms, state_monitor_adaptative_changes.vm[0] / b2.mV,label="a = " +str(p_coef[j]),color=colors[j],lw=2)
+        axs[j].set_xlabel("t [ms]")
+        axs[j].set_ylabel("Vm [mV]")
+        axs[j].legend(loc="upper right")
+        axs[j].grid()
     plt.show()
     
 
@@ -149,14 +169,53 @@ def third_condition(current) :
     plt.figure()
     legend =[]
     for j in range(len(p_coef)) :
-        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1600 * b2.ms,a=p_coef[j])
-        #plot_data(state_monitor_adaptative_changes, type='adaptative', title="HH Neuron, step current, adaptative")
+        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,a=p_coef[j])
         figure_adaptative(state_monitor_adaptative_changes,several_plot = True)
-        legend.append(p_coef[j]) 
+        legend.append("a = " + str(p_coef[j])) 
     plt.legend(legend) 
-    plt.title("Adaptative figure for different coefficient a, with pinf = a/(exp(-0.1(V+40))+1)")
+    plt.grid()
+    title = r"$p_{\infty} = \frac{a}{exp(-0.1(V+40))+1)}$"
+    plt.title("Adaptive behavior changing " + title,size = 14)
     plt.show() 
 
+    #voltage trace 
+    fig,axs = plt.subplots(len(p_coef),sharex=True,sharey=True)
+    colors =["b","orange","g"]
+    for j in range(len(p_coef)) :
+        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,a=p_coef[j])
+        axs[j].plot(state_monitor_adaptative_changes.t / b2.ms, state_monitor_adaptative_changes.vm[0] / b2.mV,label="a = " +str(p_coef[j]),color=colors[j],lw=2)
+        axs[j].set_xlabel("t [ms]")
+        axs[j].set_ylabel("Vm [mV]")
+        axs[j].legend(loc="upper right")
+        axs[j].grid()
+    plt.show()
+
+def third_condition_bis(current) :
+
+    IM_coef = np.array([-0.75,1,1.25])
+    plt.figure()
+    legend =[]
+    for j in range(len(IM_coef)) :
+        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,c=IM_coef[j])
+        figure_adaptative(state_monitor_adaptative_changes,several_plot = True)
+        legend.append("c = " + str(IM_coef[j])) 
+    plt.legend(legend) 
+    title = r"$I_M = c \times g_M \times p(E_K-V)$"
+    plt.title("Adaptive behavior changing "+title,size = 14)
+    plt.show() 
+
+
+    #voltage trace 
+    fig,axs = plt.subplots(len(IM_coef),sharex=True,sharey=True)
+    colors =["b","orange","g"]
+    for j in range(len(IM_coef)) :
+        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,c=IM_coef[j])
+        axs[j].plot(state_monitor_adaptative_changes.t / b2.ms, state_monitor_adaptative_changes.vm[0] / b2.mV,label="c = " +str(IM_coef[j]),color=colors[j],lw=2)
+        axs[j].set_xlabel("t [ms]")
+        axs[j].set_ylabel("Vm [mV]")
+        axs[j].legend(loc="upper right")
+        axs[j].grid()
+    plt.show()
 
 
 
@@ -165,7 +224,7 @@ if __name__ == "__main__":
     current =  input_factory.get_step_current(10, 1510, b2.ms, 2.0 * b2.uA)
 
     #beginning 1.3
-    #state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 1600 * b2.ms)
+    state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 1510 * b2.ms)
     #plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current, adaptative")
     #figure_adaptative(state_monitor_adaptative)
 
@@ -173,20 +232,12 @@ if __name__ == "__main__":
     #1.first condition : slow down the adaptation rate : increase the tp, the relaxation time constant for p
     #first_condition(current)
 
-    #2.second condition : Decrease the stable firing rate without changing the adaptation rate : change the value of pinf ? not working yet
+    #2.second condition : Decrease the stable firing rate without changing the adaptation rate : change the value of pinf 
     #second_condition(current)
     
-    #3.third condition : Reverse the adaptation: stable firing rate lower than initial firing rate : change IM ?not working, still on it
-    #third_condition(current)
+    #3.third condition : Reverse the adaptation: stable firing rate lower than initial firing rate : change p, or Im : same result cause dependant in formula
+    third_condition(current)
 
-    IM_coef = np.array([-0.75,1,1.25])
-    plt.figure()
-    legend =[]
-    for j in range(len(IM_coef)) :
-        state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1600 * b2.ms,c=IM_coef[j])
-        #plot_data(state_monitor_adaptative_changes, type='adaptative', title="HH Neuron, step current, adaptative")
-        figure_adaptative(state_monitor_adaptative_changes,several_plot = True)
-        legend.append(IM_coef[j]) 
-    plt.legend(legend) 
-    plt.title("Adaptative figure for different coefficient a, with pinf = a/(exp(-0.1(V+40))+1)")
-    plt.show() 
+    third_condition_bis(current)
+
+ 
