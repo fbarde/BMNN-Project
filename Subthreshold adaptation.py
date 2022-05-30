@@ -12,9 +12,9 @@ def plotI_V(current):
     state_monitor = simulate_HH_neuron_adaptative(current, 10000 * b2.ms)
     plt.figure()
     plt.plot(state_monitor.I_e[0][400:] / b2.uamp ,state_monitor.vm[0][400:] / b2.mV,lw=2)
-    plt.xlabel("injected current I_ext [uA]")
-    plt.ylabel("membrane potential V [mV]")
-    plt.title("I-V curve")
+    plt.xlabel("injected current I_ext [uA]",size=13)
+    plt.ylabel("membrane potential V [mV]",size=13)
+    plt.title("I-V curve",size = 14)
     plt.grid()
     plt.show()
     x = state_monitor.I_e[0][400:]/ b2.uamp

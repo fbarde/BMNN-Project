@@ -270,9 +270,9 @@ def getting_started():
     state_monitor_regular = simulate_HH_neuron_regular(current_r, 100 * b2.ms)
     plot_data(state_monitor_regular, type='regular', title="HH Neuron, step current, regular")
 
-    current_a =  input_factory.get_step_current(0, 1500, b2.ms, 2.0 * b2.uA)
+    current_a =  input_factory.get_step_current(10, 100, b2.ms, 2.0 * b2.uA)
 
-    state_monitor_adaptative = simulate_HH_neuron_adaptative(current_a, 1500 * b2.ms)
+    state_monitor_adaptative = simulate_HH_neuron_adaptative(current_a, 100 * b2.ms)
     plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current, adaptative")
     
 def find_stable_pt():
@@ -294,4 +294,4 @@ def find_stable_pt():
 
 if __name__ == "__main__":
     getting_started()
-    find_stable_pt()
+    #find_stable_pt()

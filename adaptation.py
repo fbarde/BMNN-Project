@@ -225,15 +225,15 @@ if __name__ == "__main__":
 
     #beginning 1.3
     state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 1510 * b2.ms)
-    #plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current, adaptative")
-    #figure_adaptative(state_monitor_adaptative)
+    plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current, adaptative")
+    figure_adaptative(state_monitor_adaptative)
 
     ###change of parameters : 
     #1.first condition : slow down the adaptation rate : increase the tp, the relaxation time constant for p
-    #first_condition(current)
+    first_condition(current)
 
     #2.second condition : Decrease the stable firing rate without changing the adaptation rate : change the value of pinf 
-    #second_condition(current)
+    second_condition(current)
     
     #3.third condition : Reverse the adaptation: stable firing rate lower than initial firing rate : change p, or Im : same result cause dependant in formula
     third_condition(current)
