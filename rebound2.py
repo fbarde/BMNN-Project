@@ -2,7 +2,7 @@ import brian2 as b2
 import matplotlib.pyplot as plt
 import numpy as np
 import neurodynex3.tools.input_factory as input_factory
-from implementation_HH import simulate_HH_neuron_regular
+from implementation_2 import simulate_HH_neuron_regular2
 
 
 def stim_protocol_rebound():
@@ -29,7 +29,7 @@ def stim_protocol_rebound():
     # Run the simulation for different amplitudes of negative step currents
     for I_ in I:
         current = input_factory.get_step_current(10, 45, b2.ms, I_ * b2.uA)
-        state_monitor = simulate_HH_neuron_regular(current, 110 * b2.ms)
+        state_monitor = simulate_HH_neuron_regular2(current, 110 * b2.ms)
 
 
         ax_amp[0].plot(state_monitor.t / b2.ms, state_monitor.vm[0] / b2.mV, lw=2)
@@ -59,7 +59,7 @@ def stim_protocol_rebound():
      # Run the simulation for different durations of negative step currents
     for dur_ in durs:
         current = input_factory.get_step_current(10, dur_, b2.ms, -7.2 * b2.uA)
-        state_monitor = simulate_HH_neuron_regular(current, 120 * b2.ms)
+        state_monitor = simulate_HH_neuron_regular2(current, 120 * b2.ms)
 
 
         ax_dur[0].plot(state_monitor.t / b2.ms, state_monitor.vm[0] / b2.mV, lw=2)
@@ -117,7 +117,7 @@ def plot_x_inf_tau(vm, minf, ninf, hinf, tm, tn, th):
 def gate_var_simul():
 
     current = input_factory.get_step_current(10, 45, b2.ms, -7.2 * b2.uA)
-    state_monitor = simulate_HH_neuron_regular(current, 120 * b2.ms)
+    state_monitor = simulate_HH_neuron_regular2(current, 120 * b2.ms)
 
     V_m =state_monitor.vm[0]/ b2.mV
     Th =state_monitor.th[0] / b2.ms
@@ -157,19 +157,20 @@ def gate_var_simul():
 def gate_var_analytique():
 
     vm = np.linspace(-200, 200, 100)
-
-    alphah = 0.128*np.exp(-(vm+43)/18)
-    alpham = -0.32*(47+vm)/(np.exp(-0.25*(vm+47))-1)
-    alphan = -0.032*(45+vm)/(np.exp(-0.2*(vm+45))-1)
-    betah = 4./(1+np.exp(-0.2*(vm + 20)))
-    betam = 0.28*(vm + 20)/(np.exp(0.2*(vm + 20))-1)
-    betan = 0.5*np.exp(-(vm + 50)/40)
+    
+    alphah = 0.07*np.exp(-0.05*vm)
+    alpham = 0.1*(25-vm)/(np.exp(2.5-0.1*vm)-1)
+    alphan = 0.01*(10-vm)/(np.exp(1-0.1*vm)-1)
+    betah = 1/(1+np.exp(3.0-0.1*vm))
+    betam = 4*np.exp(-0.0556*vm)
+    betan = 0.125*np.exp(-0.0125*vm)
     minf = alpham/(alpham+betam)
     ninf = alphan/(alphan+betan)
     hinf = alphah/(alphah+betah)
     tm = 1/(alpham + betam)
     tn = 1/(alphan + betan)
     th = 1/(alphah + betah)
+
 
     plot_x_inf_tau(vm,minf,ninf,hinf,tm,tn,th)
 
