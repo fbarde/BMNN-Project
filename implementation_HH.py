@@ -14,7 +14,7 @@ def plot_data(state_monitor, type='regular', title=None):
     Args:
         state_monitor (StateMonitor): the data to plot
         type (string, optional): 'regular' or 'adaptative', indicate the type of HH model we are using: 
-        doesn't produce the same plots
+        doesn't produce the same number of plots
         title (string, optional): plot title to display
     """
     # Plot of membrane potential (vm), external current I_e, and other current I_a, I_k
@@ -65,7 +65,7 @@ def plot_data(state_monitor, type='regular', title=None):
 
     if title is not None:
         plt.suptitle(title)
-    #plt.show()
+    
     
     # Plot of the channel variables:
 
@@ -263,20 +263,31 @@ def simulate_HH_neuron_adaptative(input_current, simulation_time):
 def getting_started():
     """
     An example to quickly get started with the Hodgkin-Huxley module.
+    Stimulate with step current regular and adaptative HH neurion model.
     """
+
+    # Stimulation of 100ms on the regular HH neuron
+
     current_r =  input_factory.get_step_current(10, 100, b2.ms, 2.0 * b2.uA)
     
-
     state_monitor_regular = simulate_HH_neuron_regular(current_r, 100 * b2.ms)
-    plot_data(state_monitor_regular, type='regular', title="HH Neuron, step current, regular")
+    plot_data(state_monitor_regular, type='regular', title="HH Neuron, step current 100ms, regular")
 
-    current_a =  input_factory.get_step_current(10, 100, b2.ms, 2.0 * b2.uA)
+    # Stimulation of 100ms on the adaptative HH neuron
+    state_monitor_adaptative = simulate_HH_neuron_adaptative(current_r, 100 * b2.ms)
+    plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current 100ms, adaptative")
+    
+    # Stimulation of 1500ms on the adaptative HH neuron
+    current_a =  input_factory.get_step_current(0, 1500, b2.ms, 2.0 * b2.uA)
 
-    state_monitor_adaptative = simulate_HH_neuron_adaptative(current_a, 100 * b2.ms)
-    plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current, adaptative")
+    state_monitor_adaptative = simulate_HH_neuron_adaptative(current_a, 1500 * b2.ms)
+    plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current 1500ms, adaptative")
     
 def find_stable_pt():
 
+    """Function to find the variables stable points.
+    Inject zero current to get the resting state of the HH neurons 
+    """
     current = input_factory.get_zero_current()
     state_monitor_regular = simulate_HH_neuron_regular(current, 70 * b2.ms)
     plot_data(state_monitor_regular, type='regular', title="HH Neuron, step current, regular")
@@ -284,6 +295,7 @@ def find_stable_pt():
     print("The variable stable points for REGULAR neuron are: \n vm = -70 mV \n m = 0.0 \n h = 1.0 \
     \n n = 0.0 ")
 
+    # Need longer simulation for adaptative neuron
     state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 1500 * b2.ms)
     plot_data(state_monitor_adaptative, type='adaptative', title="HH Neuron, step current, adaptative")
 
@@ -294,4 +306,4 @@ def find_stable_pt():
 
 if __name__ == "__main__":
     getting_started()
-    #find_stable_pt()
+    find_stable_pt()
