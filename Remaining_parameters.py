@@ -9,12 +9,20 @@ from scipy.signal import find_peaks
 
 
 def spike_timings_AdEx(state_monitor) : 
-    """function extracting spike timing from voltage trace"""
+    """
+    Function extracting spike timing from voltage trace of AdEx neuron
+    """
+
+    # Get the membrane voltage of AdEx neuron
     Volt= state_monitor.v[0] / b2.mV
     time = state_monitor.t / b2.ms
+
+    #Get the spike timings
     time_spike = []
     indice_spike = find_peaks(Volt, height= -40)
     time_spike = time[indice_spike[0]]
+
+    # Get the time between two consecutive spikes
     diff_spiking_time = []
     for i in range(len(time_spike)-1) :
         diff_spiking_time.append(time_spike[i+1]-time_spike[i])
@@ -25,6 +33,10 @@ def spike_timings_AdEx(state_monitor) :
 
 def figure_adaptative_AdEx(state_monitor,several_plot = False) : 
     
+    """
+    Function to plot the adaptative behavior of AdEX neuron.
+    """
+
     time_spike,diff_spiking_time = spike_timings_AdEx(state_monitor)
     if several_plot == False : # case where i just have one value of coefficient a,b,c respectively.
         plt.figure()
@@ -37,16 +49,19 @@ def figure_adaptative_AdEx(state_monitor,several_plot = False) :
 
 
 
-
-
 def find_remaining_param():
 
-    # Set the parameters here:
+    """
+    Function used to find the last parameters that would allow to match 
+    the spike trains of AdEx model and HH adaptative neuron.
+    """
+    # Set the remaining parameters here:
+    # Need to find parameters that match the two curves
     V_RESET= -77.2
     B= 45.35 
     TAU_W= 295 
 
-    ## HH adaptative neuron model to copy 
+    ## HH adaptative neuron model : biological ground truth to match
     current = input_factory.get_step_current(0, 1500, b2.ms, 2.0*b2.uA)
     HH_state_monitor_adaptive = simulate_HH_neuron_adaptative(current, simulation_time=1500 * b2.ms)
     
@@ -79,6 +94,8 @@ def find_remaining_param():
     plt.title("Adaptative behavior of HH adaptative neuron and AdEx model.")
 
     plt.show()
+
+    print(f'The remaining parameters values are: \n V_reset = {V_RESET} mV \n b = {B} nA \n tau_w = {TAU_W} ms')
 
 
 
