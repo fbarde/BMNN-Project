@@ -9,18 +9,26 @@ from scipy.stats import linregress
 
 
 def plotI_V(current): 
+
+    """
+    Fuction to extract the parameter a from the I-V curve.
+    """
+
     state_monitor = simulate_HH_neuron_adaptative(current, 10000 * b2.ms)
     plt.figure()
+    #Plot the I-V curve 
     plt.plot(state_monitor.I_e[0][400:] / b2.uamp ,state_monitor.vm[0][400:] / b2.mV,lw=2)
     plt.xlabel("injected current I_ext [uA]",size=13)
     plt.ylabel("membrane potential V [mV]",size=13)
     plt.title("I-V curve",size = 14)
     plt.grid()
     plt.show()
+    # Parameter a can be obtained from the slope of the I-V curve 
     x = state_monitor.I_e[0][400:]/ b2.uamp
     y = state_monitor.vm[0][400:] / b2.mV
     slope, intercept, r_value, p_value, std_err = linregress(x, y)
     gl = find_g_l(False)/b2.uS
+    #Relation to get a from the slope
     a = 1/slope-gl*10**(-3)
     return a
 
