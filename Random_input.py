@@ -7,11 +7,23 @@ from implementation_HH import simulate_HH_neuron_adaptative
 from adaptation import spike_timings
 from Remaining_parameters import spike_timings_AdEx
 
+# Set the random seed for reproductability 
 np.random.seed(1)
 
 def plot_voltage_trace_and_spike_timing(state_monitor_1, state_monitor_2, time_spike1, time_spike2):
 
-    
+    """
+    Function to plot the voltage traces and mark the spikes.
+
+    Args:
+        state_monitor_1: state monitor of HH adaptative neuron
+        state_monitor_2: state monitor of AdEx neuron model
+        time_spike_1 : time of the spikes of the first state monitor
+        time_spike_2 : time of spikes of the second state monitor
+
+    """
+
+    # Define the marks for the spikes
     mark_1 = 55*np.ones((len(time_spike1)))
     mark_2 = 55*np.ones((len(time_spike2)))
 
@@ -67,7 +79,15 @@ def gaussian_random_current(t_start, t_end, unit_time, amp_mu, amp_sigma, append
 
 def stimulate_gaussian_random(dur = 500):
 
-     # Set the parameters here:
+    """
+    Function to stimulate HH adaptative neuron and AdEx neuron with a gaussian 
+    random current input.
+
+    Args: 
+        dur: duration of the stimulation
+    """
+
+    # Set the parameters here of the AdEx neuron model :
     V_RESET= -77.2
     B= 45.35 
     TAU_W= 295 
@@ -87,17 +107,18 @@ def stimulate_gaussian_random(dur = 500):
     time_spike_adapt,diff_spiking_time_adapt = spike_timings(HH_state_monitor_adaptive)
     time_spike_AdEx, diff_spiking_time_AdEx = spike_timings_AdEx(AdEx_state_monitor)
 
-    print(len(time_spike_adapt))
-    print(len(time_spike_AdEx))
+    print('Number of spikes for HH adaptative neuron:',len(time_spike_adapt))
+    print('Number of spikes for AdeX model:',len(time_spike_AdEx))
 
     # Plot the gaussian random current I_ext :
     plt.figure()
     plt.plot(HH_state_monitor_adaptive.t / b2.ms, HH_state_monitor_adaptive.I_e[0] / b2.uamp, "red", lw=2)
     plt.xlabel('t [ms]')
     plt.ylabel(r'$I_{ext}$ [$\mu$ A]')
+    plt.suptitle(r'Gaussian random current $I_{ext}$')
     plt.grid()
 
-
+    # Plot the overlap of the two voltage traces and marking of the spikes
     plot_voltage_trace_and_spike_timing(HH_state_monitor_adaptive, AdEx_state_monitor, time_spike_adapt, time_spike_AdEx)
 
 
