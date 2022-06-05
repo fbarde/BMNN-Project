@@ -8,6 +8,7 @@ from implementation_HH import plot_Vm_I
 
 def find_E_l(plot=True):
     """Function to find the parameter E_l"""
+
     # No input current to find E_l
     current = input_factory.get_zero_current()
     state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 1500 * b2.ms)
@@ -15,7 +16,7 @@ def find_E_l(plot=True):
         plot_Vm_I(state_monitor_adaptative, r'Stimulation protocol: find parameter $E_l$.')
     
     #E_l corresponds to the constant potential value that is reached
-    E_l =  state_monitor_adaptative.vm[0][-1]#max(state_monitor_adaptative.vm[0])
+    E_l =  state_monitor_adaptative.vm[0][-1]
     if(plot==True):
         print("Parameter E_l = ", E_l)
     return E_l
@@ -23,8 +24,9 @@ def find_E_l(plot=True):
 
 def find_g_l(plot=True):
     """ Function to find parameter g_l"""
-    # C'EST 1/R !!!
 
+    # Formula for g_l = 1/R
+    # Need to find R before
     g_l=1/find_R(False)
 
     if(plot==True):
@@ -35,6 +37,7 @@ def find_R(plot=True):
     """ Function to find parameter membrane resistance R"""
     # Need to input a step current: active for only one timestep
     # NOT A DELTA INPUT CURRENT LIKE IN CORRECTION LIF !!
+
     I_ext = 1.0
     current = input_factory.get_step_current(10, 80, b2.ms, I_ext * b2.uA)
     state_monitor_adaptative = simulate_HH_neuron_adaptative(current, 100 * b2.ms)
@@ -44,9 +47,11 @@ def find_R(plot=True):
     v_max = max(state_monitor_adaptative.vm[0])
     v_rest = find_E_l(False)
 
+    # Formula for R
     R = (v_max - v_rest)/(I_ext * b2.uA)
     if(plot==True):
         print("Parameter resistance of the membrane R =" , R)
+        
     return R
 
 
