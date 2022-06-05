@@ -10,12 +10,22 @@ from scipy.signal import find_peaks
 
 
 def spike_timings(state_monitor) : 
-    """function extracting spike timing from voltage trace"""
+    """
+    Function extracting spike timing from voltage trace.
+
+    Args: state_monitor
+    Return: Time of the spikes and the time diff between two consecutive spikes.
+    """
+
     Volt= state_monitor.vm[0] / b2.mV
     time = state_monitor.t / b2.ms
+
+    # Register the times of the spikes
     time_spike = []
-    indice_spike = find_peaks(Volt,height= -40)
-    time_spike = time[indice_spike[0]]
+    indice_spike = find_peaks(Volt,height= -40) #Find spikes with scipy.signal
+    time_spike = time[indice_spike[0]] #Register time of the spike
+    
+    #Compute the time between two consecutive spikes
     diff_spiking_time = []
     for i in range(len(time_spike)-1) :
         diff_spiking_time.append(time_spike[i+1]-time_spike[i])
@@ -23,6 +33,17 @@ def spike_timings(state_monitor) :
     return time_spike,diff_spiking_time
 
 def figure_adaptative(state_monitor,several_plot = False) : 
+
+    """
+    Function used to plot the adaptative behavior of the HH model.
+    Plot the time difference between two conecutive spikes as a function 
+    of the spike timing.
+
+    Args: state_monitor, several_plot (bool)
+
+    several_plots is used when want to plot several adaptative curves with 
+    different parameters to see the effect of the parameter.
+    """
     
     time_spike,diff_spiking_time = spike_timings(state_monitor)
     if several_plot == False : # case where i just have one value of coefficient a,b,c respectively.
@@ -47,11 +68,17 @@ def volting_trace(state_monitor) :
 
 def simulate_HH_neuron_adaptative_change_parameter(input_current, simulation_time,a=1,b=1,c=1):
 
-    """A Hodgkin-Huxley neuron implemented in Brian2.
+    """A Hodgkin-Huxley neuron implemented in Brian2. Change the parameters values. 
 
     Args:
         input_current (TimedArray): Input current injected into the HH neuron
         simulation_time (float): Simulation time [seconds]
+
+        a (float): coeficient influencing value of p_inf
+        b (float): coefficient influencing value of tau_p
+        c (float): coefficient influencing value of I_m
+
+
 
     Returns:
         StateMonitor: Brian2 StateMonitor with recorded fields
@@ -111,13 +138,23 @@ def simulate_HH_neuron_adaptative_change_parameter(input_current, simulation_tim
     return st_mon
 
 def first_condition(current) : 
+
+    """
+    Function to slow the adaptation rate, of the adaptation behavior.
+    The adaptation rate is modified by modifying the parameter tau_p.
+    """
+
+    # Define different coefficients b value
     t_coef = np.array([0.5,1,2])
     plt.figure()
     legend =[]
+
+    # Plot the adaptative curve for different values of b (see the effect of tau_p)
     for j in range(len(t_coef)) :
         state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,b=t_coef[j])
         figure_adaptative(state_monitor_adaptative_changes,several_plot = True)
         legend.append("b = " + str(t_coef[j]))
+
     plt.legend(legend) 
     title = r"$\tau_p = \frac{b\cdot2000}{3.3exp((V+20)/20) + exp(-(V+20)/20)}$"
     #plt.title(title)
@@ -125,7 +162,7 @@ def first_condition(current) :
     plt.show()
 
 
-    #voltage trace 
+    #Voltage trace 
     fig,axs = plt.subplots(len(t_coef),sharex=True,sharey=True)
     colors =["b","orange","g"]
     for j in range(len(t_coef)) :
@@ -138,20 +175,29 @@ def first_condition(current) :
     plt.show()
 
 def second_condition(current) :
-    #adaptive figure
+
+    """
+    Function to decrease the stable firing rate without changing the adaptation rate.
+    The adaptation rate is modified by modifying the parameter p_inf.
+    """
+
+    #Define different values of coefficient a influencing param p_inf
     p_coef = np.array([0.75,1,1.25])
     plt.figure()
     legend =[]
+
+    # Plot the adaptative curve for different values of a (see the effect of p_inf)
     for j in range(len(p_coef)) :
         state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,a=p_coef[j])
         figure_adaptative(state_monitor_adaptative_changes,several_plot = True)
         legend.append("a = " + str(p_coef[j])) 
+
     plt.legend(legend) 
     title = r"$p_{\infty} = \frac{a}{exp(-0.1(V+40))+1)}$"
     plt.title("Adaptive behavior changing " + title,size = 14)
     plt.show() 
 
-    #voltage trace 
+    #Voltage trace 
     fig,axs = plt.subplots(len(p_coef),sharex=True,sharey=True)
     colors =["b","orange","g"]
     for j in range(len(p_coef)) :
@@ -165,20 +211,30 @@ def second_condition(current) :
     
 
 def third_condition(current) :
+
+    """
+    Function to revearse the adaptation.
+    The adaptation is inversed by changing the sign of the parameter p_inf.
+    """
+
+    # Positive and negative value of coeff a influencing p_inf
     p_coef = np.array([1,-1])
     plt.figure()
     legend =[]
+
+    # Plot the adaptative curve for negative value of a (see the effect of negative p_inf)
     for j in range(len(p_coef)) :
         state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,a=p_coef[j])
         figure_adaptative(state_monitor_adaptative_changes,several_plot = True)
         legend.append("a = " + str(p_coef[j])) 
+
     plt.legend(legend) 
     plt.grid()
     title = r"$p_{\infty} = \frac{a}{exp(-0.1(V+40))+1)}$"
     plt.title("Adaptive behavior changing " + title,size = 14)
     plt.show() 
 
-    #voltage trace 
+    #Voltage trace 
     fig,axs = plt.subplots(len(p_coef),sharex=True,sharey=True)
     colors =["b","orange","g"]
     for j in range(len(p_coef)) :
@@ -190,22 +246,32 @@ def third_condition(current) :
         axs[j].grid()
     plt.show()
 
+
 def third_condition_bis(current) :
 
+    """
+    Function to revearse the adaptation.
+    The adaptation is inversed by changing the sign of the parameter I_m.
+    """
+
+    # Positive and negative value of coeff c influencing I_M
     IM_coef = np.array([-0.75,1,1.25])
     plt.figure()
     legend =[]
+
+    # Plot the adaptative curve for negative value of c (see the effect of negative I_M)
     for j in range(len(IM_coef)) :
         state_monitor_adaptative_changes = simulate_HH_neuron_adaptative_change_parameter(current, 1510 * b2.ms,c=IM_coef[j])
         figure_adaptative(state_monitor_adaptative_changes,several_plot = True)
         legend.append("c = " + str(IM_coef[j])) 
+
     plt.legend(legend) 
     title = r"$I_M = c \times g_M \times p(E_K-V)$"
     plt.title("Adaptive behavior changing "+title,size = 14)
     plt.show() 
 
 
-    #voltage trace 
+    #Voltage trace 
     fig,axs = plt.subplots(len(IM_coef),sharex=True,sharey=True)
     colors =["b","orange","g"]
     for j in range(len(IM_coef)) :
