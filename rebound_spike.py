@@ -7,9 +7,12 @@ from implementation_HH import simulate_HH_neuron_regular
 
 def stim_protocol_rebound():
 
-    """Test different negative amplitudes and durations of negative current 
-    to observe if presence of a rebound spike"""
+    """
+    Test different negative amplitudes and durations of negative current 
+    to observe if presence of a rebound spike in regular HH neuron
+    """
 
+    ### DIFFERENT CURRENT AMPLITUDES ###
 
     # Definition of the different amplitudes of negative pulse currents
     I = np.linspace(0, -20, 10)
@@ -44,6 +47,8 @@ def stim_protocol_rebound():
     fig1.suptitle('Stimulation protocol for Rebound Spike: different amplitudes')
 
 
+    ### DIFFERENT STEP CURRENT DURATIONS ###
+
     # Define the plots of Vm and I_ext for different durations
     fig2,ax_dur = plt.subplots(2,1)
     ax_dur[0].set_xlabel("t [ms]")
@@ -74,7 +79,9 @@ def stim_protocol_rebound():
     fig2.suptitle('Stimulation protocol for Rebound Spike: different durations')
     plt.show()
 
+
 def plot_x_inf_tau(vm, minf, ninf, hinf, tm, tn, th):
+    """Function to plot the variables x_inf and tau."""
 
     fig,ax = plt.subplots(3,1)
     ax[0].plot(vm, minf, "black", lw=2)
@@ -116,9 +123,14 @@ def plot_x_inf_tau(vm, minf, ninf, hinf, tm, tn, th):
     
 def gate_var_simul():
 
+    """ Function to plot the gating variables x_inf and tau 
+    as a function of the membrane voltage for our simulation."""
+
+    # Stimulation of the regular HH neuron.
     current = input_factory.get_step_current(10, 45, b2.ms, -7.2 * b2.uA)
     state_monitor = simulate_HH_neuron_regular(current, 120 * b2.ms)
 
+    # Compute the x_inf and load tau :
     V_m =state_monitor.vm[0]/ b2.mV
     Th =state_monitor.th[0] / b2.ms
     Tn =state_monitor.tn[0] / b2.ms
@@ -132,7 +144,8 @@ def gate_var_simul():
     H =state_monitor.h[0] / b2.volt
     T = state_monitor.t / b2.ms
 
-
+    #Plots: 
+    
     fig,ax = plt.subplots(3,1)
     ax[0].plot(T, N, "black", lw=2)
     ax[0].set_xlabel("time")
@@ -156,8 +169,15 @@ def gate_var_simul():
 
 def gate_var_analytique():
 
-    vm = np.linspace(-200, 200, 100)
+    """ 
+    Function to plot the analytical behavior of the gating variables
+    x_inf and tau as a function of the membrane voltage.
+    """
 
+    # Range of membrane voltage for which plot x_inf and tau
+    vm = np.linspace(-100, 50, 100)
+
+    # Analytical expression of the gating variables
     alphah = 0.128*np.exp(-(vm+43)/18)
     alpham = -0.32*(47+vm)/(np.exp(-0.25*(vm+47))-1)
     alphan = -0.032*(45+vm)/(np.exp(-0.2*(vm+45))-1)
@@ -171,6 +191,7 @@ def gate_var_analytique():
     tn = 1/(alphan + betan)
     th = 1/(alphah + betah)
 
+    # Plot
     plot_x_inf_tau(vm,minf,ninf,hinf,tm,tn,th)
 
    
@@ -178,6 +199,6 @@ def gate_var_analytique():
 
 if __name__ == "__main__":
     
-    #stim_protocol_rebound() #Stimulation protocol
+    stim_protocol_rebound() #Stimulation protocol
     gate_var_simul() #Plot of x_inf and tau for our simulation
-    #gate_var_analytique() #Plot of x_inf and tau for a big range of membrane pot.
+    gate_var_analytique() #Plot of x_inf and tau for a big range of membrane pot.
