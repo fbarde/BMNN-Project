@@ -4,6 +4,9 @@ import numpy as np
 import neurodynex3.tools.input_factory as input_factory
 from implementation_2 import simulate_HH_neuron_regular2
 
+#### CODE WITH THE CONDITIONS OF THE EXERCISE 5 ####
+#### Used to compare for exo Rebound_spike ####
+
 
 def stim_protocol_rebound():
 
@@ -156,7 +159,7 @@ def gate_var_simul():
 
 def gate_var_analytique():
 
-    vm = np.linspace(-200, 200, 100)
+    vm = np.linspace(-100, 150, 100)
     
     alphah = 0.07*np.exp(-0.05*vm)
     alpham = 0.1*(25-vm)/(np.exp(2.5-0.1*vm)-1)
@@ -179,6 +182,6 @@ def gate_var_analytique():
 
 if __name__ == "__main__":
     
-    #stim_protocol_rebound() #Stimulation protocol
+    stim_protocol_rebound() #Stimulation protocol
     gate_var_simul() #Plot of x_inf and tau for our simulation
-    #gate_var_analytique() #Plot of x_inf and tau for a big range of membrane pot.
+    gate_var_analytique() #Plot of x_inf and tau for a big range of membrane pot.

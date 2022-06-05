@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import neurodynex3.tools.input_factory as input_factory
 
+#### CODE WITH THE CONDITIONS OF THE EXERCISE 5 ####
+#### Used to compare for exo Rebound_spike ####
+
+
 
 ############# DEFINITION OF THE PLOTTING FUNCTIONS ##############
 
@@ -184,10 +188,6 @@ def simulate_HH_neuron_regular2(input_current, simulation_time):
     neuron.h = 0.60
     neuron.n = 0.32
 
-    #neuron.vm = -70* b2.mV
-    #neuron.m = 0.0
-    #neuron.h = 1.0
-    #neuron.n = 0.0
 
     # tracking parameters
     st_mon = b2.StateMonitor(neuron, ["vm", "I_e", "I_na", "I_k", "m", "n", "h","minf","ninf","hinf","tm","tn","th"], record=True)
@@ -225,4 +225,4 @@ def find_stable_pt2():
 
 if __name__ == "__main__":
     getting_started2()
-    #find_stable_pt2()
+    find_stable_pt2()
