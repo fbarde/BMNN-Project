@@ -7,7 +7,7 @@ Running the main of each Python file allows to print the values of the parameter
 
 **1.1 Getting started :** implementation_HH.py
 
-**1.2 Rebound spike? :** rebound_spike.py (and implementation_2.py and rebound2 for comparision with Exercise 5)
+**1.2 Rebound spike? :** rebound_spike.py (and implementation_2.py and rebound2.py for comparision with Exercise 5)
 
 **1.3 Adaptation :** adaptation.py
 
