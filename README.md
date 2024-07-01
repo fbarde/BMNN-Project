@@ -17,20 +17,29 @@ The provided code gathers the different methods used, the functions used for the
 Each exercise of the project has its own Python file, named corresponding to the title of the exercise.
 Running the main of each Python file allows to print the values of the parameters found, and plot the figures asked.
 
-**1.1 Getting started :** implementation_HH.py
+**1.1 Getting started :** implementation_HH.py\
+Implementation of the Hodgkin Huxley regular spiking single neuron.
 
-**1.2 Rebound spike? :** rebound_spike.py (and implementation_2.py and rebound2.py for comparision with Exercise 5)
+**1.2 Rebound spike? :** rebound_spike.py (and implementation_2.py and rebound2.py for comparision with Exercise 5)\
+Demonstration of the absence of rebound spike in the HH single neuron model.
 
-**1.3 Adaptation :** adaptation.py
+**1.3 Adaptation :** adaptation.py\
+Demonstration of the adaptation behavior of the spiking of the single neuron model, under constant stiumulation.
 
-**2.1 Passive properties :** Passive_properties.py
+**2.1 Passive properties :** Passive_properties.py\
+Investigation of the passive membrane parameters of the single neuron.
 
-**2.2 Exponential Integrate and Fire :** Exponential_Integrate_and_Fire.py
+**2.2 Exponential Integrate and Fire :** Exponential_Integrate_and_Fire.py\
+Determination of the exponential parameters of the AdEx neuron model.
 
-**2.3 Subthreshold adaptation :** Subthreshold_adaptation.py
+**2.3 Subthreshold adaptation :** Subthreshold_adaptation.py\
+Determination of the parameters for the subthreshold behavior of the AdEx neuron model.
 
-**2.4 Remaining parameters :** Remaining_parameters.py
+**2.4 Remaining parameters :** Remaining_parameters.py\
+Determination of the remaining AdEx model parameters.
 
-**2.5 Testing on random input :** Random_input.py
+**2.5 Testing on random input :** Random_input.py\
+Evaluation of the accuracy of the AdEx model when replicating the behavior of an HH adaptative neuron,
+with random current input.
 
 
